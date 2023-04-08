@@ -39,7 +39,7 @@ class Purchase(models.Model):
 
 class PurchaseItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE)
+    purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE, related_name="purchase_items")
     expiration_date = models.DateField(null=True, blank=True)
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
