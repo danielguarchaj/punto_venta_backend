@@ -48,5 +48,4 @@ class NewPurchaseAPIView(APIView):
                 price=float(purchaseItem['price']),
                 quantity=float(purchaseItem['quantity']),
             )
-        sleep(3)
         return Response({"status": 200})
