@@ -10,5 +10,6 @@ urlpatterns = [
          name='purchase_detail'),
     path('purchase-items/', views.PurchaseItemListView.as_view(),
          name='purchase_item_list'),
-    path('new-purchase/', views.NewPurchaseAPIView.as_view(), name='new-purchase')
+    path('new-purchase/', views.NewPurchaseAPIView.as_view(), name='new-purchase'),
+    path('new-sale/', views.NewSaleAPIView.as_view(), name='new-sale'),
 ]
