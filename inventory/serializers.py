@@ -11,8 +11,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class PurchaseSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
     class Meta:
         model = Purchase
         fields = "__all__"

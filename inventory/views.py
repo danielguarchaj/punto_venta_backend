@@ -2,23 +2,21 @@ from functools import reduce
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from inventory.models import Purchase, PurchaseItem, Product, SaleInvoice, SaleInvoiceItem
 from inventory.serializers import PurchaseSerializer, PurchaseItemSerializer, PurchaseWithDetailSerializer, ProductSerializer
 from inventory.filters import PurchaseItemFilter, PurchaseFilter
 from customers.models import Customer
 
-from time import sleep
 
-
-class PurchaseListView(generics.ListAPIView):
+class PurchaseViewSet(ModelViewSet):
     queryset = Purchase.objects.all()
-    serializer_class = PurchaseSerializer
     filterset_class = PurchaseFilter
 
-
-class PurchaseRetrieveView(generics.RetrieveAPIView):
-    queryset = Purchase.objects.all()
-    serializer_class = PurchaseWithDetailSerializer
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return PurchaseWithDetailSerializer
+        return PurchaseSerializer
 
 
 class PurchaseItemListView(generics.ListAPIView):
