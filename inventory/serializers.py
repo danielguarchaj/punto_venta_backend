@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from inventory.models import Product, Purchase, PurchaseItem
+from inventory.models import Product, Purchase, PurchaseItem, Provider
 from users.serializers import UserSerializer
 
 
@@ -24,9 +24,16 @@ class PurchaseItemSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ProviderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Provider
+        fields = "__all__"
+
+
 class PurchaseWithDetailSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     purchase_items = PurchaseItemSerializer(many=True)
+    provider = ProviderSerializer()
 
     class Meta:
         model = Purchase

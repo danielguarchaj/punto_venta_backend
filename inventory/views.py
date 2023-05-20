@@ -3,8 +3,21 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from inventory.models import Purchase, PurchaseItem, Product, SaleInvoice, SaleInvoiceItem
-from inventory.serializers import PurchaseSerializer, PurchaseItemSerializer, PurchaseWithDetailSerializer, ProductSerializer
+from inventory.models import (
+    Purchase,
+    PurchaseItem,
+    Product,
+    SaleInvoice,
+    SaleInvoiceItem,
+    Provider,
+)
+from inventory.serializers import (
+    PurchaseSerializer,
+    PurchaseItemSerializer,
+    PurchaseWithDetailSerializer,
+    ProductSerializer,
+    ProviderSerializer,
+)
 from inventory.filters import PurchaseItemFilter, PurchaseFilter
 from customers.models import Customer
 
@@ -30,15 +43,23 @@ class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
 
 
+class ProviderListView(generics.ListAPIView):
+    queryset = Provider.objects.all()
+    serializer_class = ProviderSerializer
+
+
 class NewPurchaseAPIView(APIView):
     def post(self, request, *args, **kwargs):
         user = request.user
-        purchaseList = request.data
+        purchaseList = request.data['purchaseList']
+        providerId = request.data['providerId']
+        provider = Provider.objects.get(pk=providerId)
         total = reduce(
             lambda x, y: x + (float(y['price']) * float(y['quantity'])), purchaseList, 0)
         newPurchase = Purchase.objects.create(
             user=user,
-            total=total
+            total=total,
+            provider=provider,
         )
         for purchaseItem in purchaseList:
             quantity = float(purchaseItem['quantity'])
@@ -51,6 +72,17 @@ class NewPurchaseAPIView(APIView):
                 price=float(purchaseItem['price']),
                 quantity=quantity,
             )
+        return Response({"status": 200})
+
+
+class VoidPurchase(APIView):
+    def post(self, request):
+        print(request.data)
+        purchase_id = request.data['purchaseId']
+        purchase = Purchase.objects.get(pk=purchase_id)
+        purchase.void_purchase()
+        # import time
+        # time.sleep(3)
         return Response({"status": 200})
 
 

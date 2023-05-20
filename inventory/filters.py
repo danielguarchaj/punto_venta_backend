@@ -8,6 +8,7 @@ class PurchaseFilter(filters.FilterSet):
     model = Purchase
     fields = {
       'user__username': ["icontains"],
+      'voided': ["exact",]
     }
 
 
@@ -16,7 +17,6 @@ class PurchaseItemFilter(filters.FilterSet):
   class Meta:
     model = PurchaseItem
     fields = {
-      
       'product__name': ["icontains"],
       'product__description': ["icontains"],
       'product__category__name': ["icontains"],
