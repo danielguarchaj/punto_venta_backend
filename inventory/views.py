@@ -124,8 +124,6 @@ class NewSaleAPIView(APIView):
 
 class VoidSale(APIView):
     def post(self, request):
-        import time
-        time.sleep(3)
         sale_id = request.data['saleId']
         sale = SaleInvoice.objects.get(pk=sale_id)
         sale.void_sale()
