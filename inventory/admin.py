@@ -8,6 +8,7 @@ from inventory.models import (
     PurchaseItem,
     SaleInvoice,
     SaleInvoiceItem,
+    Provider,
 )
 
 admin.site.register(Brand)
@@ -17,3 +18,4 @@ admin.site.register(Purchase)
 admin.site.register(PurchaseItem)
 admin.site.register(SaleInvoice)
 admin.site.register(SaleInvoiceItem)
+admin.site.register(Provider)
