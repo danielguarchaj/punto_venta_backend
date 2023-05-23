@@ -17,8 +17,9 @@ from inventory.serializers import (
     PurchaseWithDetailSerializer,
     ProductSerializer,
     ProviderSerializer,
+    SaleInvoiceWithDetailSerializer,
 )
-from inventory.filters import PurchaseItemFilter, PurchaseFilter
+from inventory.filters import PurchaseItemFilter, PurchaseFilter, SaleInvoiceFilter
 from customers.models import Customer
 
 
@@ -30,6 +31,12 @@ class PurchaseViewSet(ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return PurchaseWithDetailSerializer
         return PurchaseSerializer
+
+
+class SaleInvoiceViewSet(ModelViewSet):
+    queryset = SaleInvoice.objects.all()
+    filterset_class = SaleInvoiceFilter
+    serializer_class = SaleInvoiceWithDetailSerializer
 
 
 class PurchaseItemListView(generics.ListAPIView):
@@ -77,12 +84,9 @@ class NewPurchaseAPIView(APIView):
 
 class VoidPurchase(APIView):
     def post(self, request):
-        print(request.data)
         purchase_id = request.data['purchaseId']
         purchase = Purchase.objects.get(pk=purchase_id)
         purchase.void_purchase()
-        # import time
-        # time.sleep(3)
         return Response({"status": 200})
 
 
@@ -111,7 +115,18 @@ class NewSaleAPIView(APIView):
             SaleInvoiceItem.objects.create(
                 sale_invoice=newSaleInvoice,
                 product=product,
-                quantity=float(sale['quantity'])
+                quantity=float(sale['quantity']),
+                total=float(sale['quantity'] * product.sale_price)
             )
 
+        return Response({"status": 200})
+
+
+class VoidSale(APIView):
+    def post(self, request):
+        import time
+        time.sleep(3)
+        sale_id = request.data['saleId']
+        sale = SaleInvoice.objects.get(pk=sale_id)
+        sale.void_sale()
         return Response({"status": 200})

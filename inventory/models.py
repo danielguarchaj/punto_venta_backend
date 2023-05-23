@@ -108,6 +108,13 @@ class SaleInvoice(models.Model):
         Customer, on_delete=models.CASCADE, null=True, blank=True)
     sale_date = models.DateTimeField(auto_now_add=True)
     total = models.DecimalField(max_digits=10, decimal_places=2)
+    voided = models.BooleanField(default=False)
+    
+    def void_sale(self):
+        for saleItem in self.sale_invoice_items.all():
+            saleItem.product.increment_stock(saleItem.quantity)
+        self.voided = True
+        self.save()
 
     class Meta:
         verbose_name = "Venta"
@@ -115,9 +122,11 @@ class SaleInvoice(models.Model):
 
 
 class SaleInvoiceItem(models.Model):
-    sale_invoice = models.ForeignKey(SaleInvoice, on_delete=models.CASCADE)
+    sale_invoice = models.ForeignKey(
+        SaleInvoice, on_delete=models.CASCADE, related_name="sale_invoice_items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveBigIntegerField()
+    total = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         verbose_name = "Detalle de venta"

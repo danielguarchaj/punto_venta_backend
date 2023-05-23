@@ -8,6 +8,7 @@ app_name = 'inventory'
 router = routers.DefaultRouter()
 
 router.register('purchases', views.PurchaseViewSet, basename='purchases')
+router.register('sales', views.SaleInvoiceViewSet, basename='sales')
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -18,4 +19,5 @@ urlpatterns = [
     path('new-sale/', views.NewSaleAPIView.as_view(), name='new-sale'),
     path('providers/', views.ProviderListView.as_view(), name='providers'),
     path('void-purchase/', views.VoidPurchase.as_view(), name='void-purchase'),
+    path('void-sale/', views.VoidSale.as_view(), name='void-sale'),
 ]

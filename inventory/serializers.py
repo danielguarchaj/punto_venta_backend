@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from inventory.models import Product, Purchase, PurchaseItem, Provider
+from inventory.models import Product, Purchase, PurchaseItem, Provider, SaleInvoice, SaleInvoiceItem
 from users.serializers import UserSerializer
+from customers.serializers import CustomerSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -37,4 +38,20 @@ class PurchaseWithDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Purchase
+        fields = "__all__"
+
+
+class SaleInvoiceItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SaleInvoiceItem
+        exclude = ["sale_invoice"]
+        depth = 2
+
+
+class SaleInvoiceWithDetailSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    customer = CustomerSerializer()
+    sale_invoice_items = SaleInvoiceItemSerializer(many=True)
+    class Meta:
+        model = SaleInvoice
         fields = "__all__"
