@@ -19,7 +19,12 @@ from inventory.serializers import (
     ProviderSerializer,
     SaleInvoiceWithDetailSerializer,
 )
-from inventory.filters import PurchaseItemFilter, PurchaseFilter, SaleInvoiceFilter
+from inventory.filters import (
+    PurchaseItemFilter,
+    PurchaseFilter,
+    SaleInvoiceFilter,
+    ProductFilter,
+)
 from customers.models import Customer
 
 
@@ -48,6 +53,7 @@ class PurchaseItemListView(generics.ListAPIView):
 class ProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filterset_class = ProductFilter
 
 
 class ProviderListView(generics.ListAPIView):

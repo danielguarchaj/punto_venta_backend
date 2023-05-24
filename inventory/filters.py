@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters, DateFromToRangeFilter
-from inventory.models import PurchaseItem, Purchase, SaleInvoice
+from inventory.models import PurchaseItem, Purchase, SaleInvoice, Product
 
 
 class PurchaseFilter(filters.FilterSet):
@@ -39,4 +39,17 @@ class PurchaseItemFilter(filters.FilterSet):
             'product__category__description': ["icontains"],
             'product__brand__name': ["icontains"],
             'product__brand__description': ["icontains"],
+        }
+
+
+class ProductFilter(filters.FilterSet):
+    class Meta:
+        model = Product
+        fields = {
+            'name': ["icontains"],
+            'description': ["icontains"],
+            'category__name': ["icontains"],
+            'category__description': ["icontains"],
+            'brand__name': ["icontains"],
+            'brand__description': ["icontains"],
         }
