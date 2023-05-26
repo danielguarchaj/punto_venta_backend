@@ -20,4 +20,5 @@ urlpatterns = [
     path('providers/', views.ProviderListView.as_view(), name='providers'),
     path('void-purchase/', views.VoidPurchase.as_view(), name='void-purchase'),
     path('void-sale/', views.VoidSale.as_view(), name='void-sale'),
+    path('dashboard/', views.Dashboard.as_view(), name='dashboard'),
 ]

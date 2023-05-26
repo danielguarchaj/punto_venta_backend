@@ -1,4 +1,7 @@
 from functools import reduce
+from datetime import date
+from django.db.models import Sum
+from django.contrib.auth.models import Group
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -134,3 +137,71 @@ class VoidSale(APIView):
         sale = SaleInvoice.objects.get(pk=sale_id)
         sale.void_sale()
         return Response({"status": 200})
+
+
+class Dashboard(APIView):
+    def getAdminData(self, today):
+        sales = SaleInvoice.objects.filter(
+            sale_date__date=today, voided=False)
+        sales_total = sales.aggregate(total_sum=Sum('total', default=0))
+        purchases = Purchase.objects.filter(
+            purchase_date__date=today, voided=False)
+        purchases_total = purchases.aggregate(
+            total_sum=Sum('total', default=0))
+        customers_count = Customer.objects.all().count()
+        sale_items_sum = SaleInvoiceItem.objects.filter(
+            sale_invoice__sale_date__date=today,
+            sale_invoice__voided=False
+        ).aggregate(quantity_sum=Sum('quantity', default=0))
+        sales_serializer = SaleInvoiceWithDetailSerializer(sales, many=True)
+        sales_serialized_data = sales_serializer.data
+        data = {
+            "sales_count": sales.count(),
+            "sales_total": sales_total['total_sum'],
+            "purchases_count": purchases.count(),
+            "purchases_total": purchases_total['total_sum'],
+            "sale_items_sum": sale_items_sum['quantity_sum'],
+            "customers_count": customers_count,
+            "sales": sales_serialized_data
+        }
+        return Response({"data": data})
+
+    def getSalesData(self, today, user):
+        sales = SaleInvoice.objects.filter(
+            sale_date__date=today, voided=False, user=user)
+        sales_total = sales.aggregate(total_sum=Sum('total', default=0))
+        purchases = Purchase.objects.filter(
+            purchase_date__date=today, voided=False, user=user)
+        purchases_total = purchases.aggregate(
+            total_sum=Sum('total', default=0))
+        customers_count = Customer.objects.all().count()
+        sale_items_sum = SaleInvoiceItem.objects.filter(
+            sale_invoice__sale_date__date=today,
+            sale_invoice__voided=False,
+            sale_invoice__user=user
+        ).aggregate(quantity_sum=Sum('quantity', default=0))
+        sales_serializer = SaleInvoiceWithDetailSerializer(sales, many=True)
+        sales_serialized_data = sales_serializer.data
+        data = {
+            "sales_count": sales.count(),
+            "sales_total": sales_total['total_sum'],
+            "purchases_count": purchases.count(),
+            "purchases_total": purchases_total['total_sum'],
+            "sale_items_sum": sale_items_sum['quantity_sum'],
+            "customers_count": customers_count,
+            "sales": sales_serialized_data
+        }
+        return Response({"data": data})
+
+    def post(self, request):
+        user = request.user
+        admin_group = Group.objects.get(name='administradores')
+        sales_group = Group.objects.get(name='vendedores')
+        user_groups = user.groups.all()
+        today = date.today()
+
+        if admin_group in user_groups:
+            return self.getAdminData(today)
+
+        if sales_group in user_groups:
+            return self.getSalesData(today, user)
