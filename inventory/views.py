@@ -93,6 +93,11 @@ class NewPurchaseAPIView(APIView):
 
 class VoidPurchase(APIView):
     def post(self, request):
+        admin_group = Group.objects.get(name='administradores')
+        user_groups = request.user.groups.all()
+
+        if admin_group not in user_groups:
+            return Response(status=403)
         purchase_id = request.data['purchaseId']
         purchase = Purchase.objects.get(pk=purchase_id)
         purchase.void_purchase()
@@ -133,6 +138,11 @@ class NewSaleAPIView(APIView):
 
 class VoidSale(APIView):
     def post(self, request):
+        admin_group = Group.objects.get(name='administradores')
+        user_groups = request.user.groups.all()
+
+        if admin_group not in user_groups:
+            return Response(status=403)
         sale_id = request.data['saleId']
         sale = SaleInvoice.objects.get(pk=sale_id)
         sale.void_sale()
